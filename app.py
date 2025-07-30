@@ -14,11 +14,11 @@ uploaded_file = st.file_uploader("Upload a face image...", type=["jpg", "png", "
 if uploaded_file is not None:
     # Buka gambar dengan PIL dan ubah ke RGB
     img = Image.open(uploaded_file).convert('RGB')
-    img_resized = img.resize((48, 48))  # Resize ke ukuran input model
+    img_resized = img.resize((224, 224))  # SESUAIKAN DENGAN INPUT VGG16
 
     # Konversi ke array dan preprocess
     img_array = np.array(img_resized)
-    input_img = preprocess_input(np.expand_dims(img_array, axis=0))
+    input_img = preprocess_input(np.expand_dims(img_array, axis=0))  # shape: (1, 224, 224, 3)
 
     # Prediksi
     pred = model.predict(input_img)
