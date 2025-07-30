@@ -1,5 +1,5 @@
 import streamlit as st
-import cv2
+from PIL import Image
 import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.applications.vgg16 import preprocess_input
@@ -12,14 +12,17 @@ st.title("Face Emotion Detection - CK+48 (VGG16)")
 uploaded_file = st.file_uploader("Upload a face image...", type=["jpg", "png", "jpeg"])
 
 if uploaded_file is not None:
-    file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    img = cv2.imdecode(file_bytes, 1)
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img_resized = cv2.resize(img_rgb, (48, 48))
-    input_img = preprocess_input(np.expand_dims(img_resized, axis=0))
+    # Buka gambar dengan PIL dan ubah ke RGB
+    img = Image.open(uploaded_file).convert('RGB')
+    img_resized = img.resize((48, 48))  # Resize ke ukuran input model
 
+    # Konversi ke array dan preprocess
+    img_array = np.array(img_resized)
+    input_img = preprocess_input(np.expand_dims(img_array, axis=0))
+
+    # Prediksi
     pred = model.predict(input_img)
     pred_label = label_names[np.argmax(pred)]
 
-    st.image(img_rgb, caption="Uploaded Image", use_column_width=True)
+    st.image(img, caption="Uploaded Image", use_column_width=True)
     st.write(f"### Predicted Emotion: {pred_label}")
